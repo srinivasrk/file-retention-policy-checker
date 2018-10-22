@@ -1,0 +1,19 @@
+{
+  "name": "file-retention-policy-checker",
+  "version": "1.0.0",
+  "description": "A NodeJS script to check file retention policy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/srinivasrk/file-retention-policy-checker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/srinivasrk/file-retention-policy-checker/issues"
+  },
+  "homepage": "https://github.com/srinivasrk/file-retention-policy-checker#readme"
+}
