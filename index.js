@@ -25,9 +25,9 @@ async function readDirectoryAsync(sourcePath) {
           let diff_date = (Math.abs(date.diff(now, 'days'))) // is the number of days its older by
           if(diff_date >= rp) {
             toZip.push(path.resolve(sourcePath, folderName))
-            if(counter == folder.length) {
-              resolve(toZip)
-            }
+          }
+          if(counter == folder.length) {
+            resolve(toZip)
           }
         }
       })
@@ -36,18 +36,21 @@ async function readDirectoryAsync(sourcePath) {
 }
 
 readDirectoryAsync(sourcePath).then((toZip) => {
-  tar.c(
-    {
-      gzip : true,
-      file: 'test.tgz'
-    },
-    toZip
-  ).then(() => {
-    console.log("Tar created");
-    // delete the folders
-    _.each(toZip, (folderName) => {
-      fs.remove(folderName);
-      console.log(new Date() + ` Deleteing ${folderName}`);
+  console.log(new Date() + ` found ${toZip.length} files non-conformant with retention policy`);
+  if(toZip.length > 0) {
+    tar.c(
+      {
+        gzip : true,
+        file: 'test.tgz'
+      },
+      toZip
+    ).then(() => {
+      console.log("Tar created");
+      // delete the folders
+      _.each(toZip, (folderName) => {
+        fs.remove(folderName);
+        console.log(new Date() + ` Deleteing ${folderName}`);
+      })
     })
-  })
+  }
 })
