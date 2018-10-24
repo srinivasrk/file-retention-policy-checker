@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/srinivasrk/file-retention-policy-checker/issues"
   },
-  "homepage": "https://github.com/srinivasrk/file-retention-policy-checker#readme"
+  "homepage": "https://github.com/srinivasrk/file-retention-policy-checker#readme",
+  "dependencies": {
+    "fs-extra": "^7.0.0",
+    "tar": "^4.4.6",
+    "underscore": "^1.9.1"
+  }
 }
