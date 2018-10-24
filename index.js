@@ -36,18 +36,18 @@ async function readDirectoryAsync(sourcePath) {
 }
 
 readDirectoryAsync(sourcePath).then((toZip) => {
-  console.log(toZip);
+  tar.c(
+    {
+      gzip : true,
+      file: 'test.tgz'
+    },
+    toZip
+  ).then(() => {
+    console.log("Tar created");
+    // delete the folders
+    _.each(toZip, (folderName) => {
+      fs.remove(folderName);
+      console.log(new Date() + ` Deleteing ${folderName}`);
+    })
+  })
 })
-
-
-
-
-// tar.c(
-//   {
-//     gzip : true,
-//     file: 'test.tgz'
-//   },
-//   ['./node_modules']
-// ).then(_ => {
-//   console.log("Tar created");
-// })
