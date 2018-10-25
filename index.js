@@ -3,6 +3,7 @@ const tar = require('tar')
 const path = require( 'path' );
 const _ = require('underscore')
 const moment = require('moment')
+const FTP = require('ftp')
 
 let sourcePath = process.env.FRP_PATH // a path to search for manifest
 let rp = process.env.FRP_RP // a integer for retention policy. EG: 30 -> remove all files older than 30 days
@@ -34,22 +35,41 @@ function readDirectoryAsync(sourcePath) {
   })
 }
 
-readDirectoryAsync(sourcePath).then((toZip) => {
-  console.log(new Date() + ` found ${toZip.length} files non-conformant with retention policy`);
-  if(toZip.length > 0) {
-    tar.c(
-      {
-        gzip : true,
-        file: 'test.tgz'
-      },
-      toZip
-    ).then(() => {
-      console.log("Tar created");
-      // delete the folders
-      _.each(toZip, (folderName) => {
-        fs.remove(folderName);
-        console.log(new Date() + ` Deleteing ${folderName}`);
-      })
-    })
-  }
+let ftpClient = new FTP()
+
+ftpClient.on('ready', function() {
+ ftpClient.list(function(err, list) {
+   if (err) throw err;
+   console.log(list);
+   ftpClient.end();
+ });
+});
+
+ftpClient.connect({
+ host: process.env.FRP_FTP_HOST,
+ user: process.env.FRP_FTP_USER,
+ password: process.env.FRP_FTP_PASSWORD
 })
+
+// readDirectoryAsync(sourcePath).then((toZip) => {
+//   console.log(new Date() + ` found ${toZip.length} files non-conformant with retention policy`);
+//
+//
+//
+//   // if(toZip.length > 0) {
+//   //   tar.c(
+//   //     {
+//   //       gzip : true,
+//   //       file: 'test.tgz'
+//   //     },
+//   //     toZip
+//   //   ).then(() => {
+//   //     console.log("Tar created");
+//   //     // delete the folders
+//   //     _.each(toZip, (folderName) => {
+//   //       fs.remove(folderName);
+//   //       console.log(new Date() + ` Deleteing ${folderName}`);
+//   //     })
+//   //   })
+//   // }
+// })
