@@ -35,41 +35,43 @@ function readDirectoryAsync(sourcePath) {
   })
 }
 
-let ftpClient = new FTP()
+readDirectoryAsync(sourcePath).then((toZip) => {
+  console.log(new Date() + ` found ${toZip.length} files non-conformant with retention policy`);
+  if(toZip.length > 0) {
+    let tarFileName = `tarFile.tgz`
+    tar.c(
+      {
+        gzip : true,
+        file: tarFileName
+      },
+      toZip
+    ).then(() => {
+      console.log("Tar created");
+      // delete the folders
+      _.each(toZip, (folderName) => {
+        fs.remove(folderName);
+        console.log(new Date() + ` Deleteing ${folderName}`);
+      })
+      //upload the file to ftp
+      let ftpClient = new FTP()
 
-ftpClient.on('ready', function() {
- ftpClient.list(function(err, list) {
-   if (err) throw err;
-   console.log(list);
-   ftpClient.end();
- });
-});
-
-ftpClient.connect({
- host: process.env.FRP_FTP_HOST,
- user: process.env.FRP_FTP_USER,
- password: process.env.FRP_FTP_PASSWORD
+      try {
+        ftpClient.on('ready', function() {
+          ftpClient.put(tarFileName, tarFileName, function(err) {
+            if (err) throw err;
+            console.log("Uploaded the file to FTP");
+            ftpClient.end();
+          });
+        });
+      } catch (e) {
+        console.log(new Date() + ` Error caught when upload file ${e}`);
+        ftpClient.end()
+      }
+      ftpClient.connect({
+       host: process.env.FRP_FTP_HOST,
+       user: process.env.FRP_FTP_USER,
+       password: process.env.FRP_FTP_PASSWORD
+      })
+    })
+  }
 })
-
-// readDirectoryAsync(sourcePath).then((toZip) => {
-//   console.log(new Date() + ` found ${toZip.length} files non-conformant with retention policy`);
-//
-//
-//
-//   // if(toZip.length > 0) {
-//   //   tar.c(
-//   //     {
-//   //       gzip : true,
-//   //       file: 'test.tgz'
-//   //     },
-//   //     toZip
-//   //   ).then(() => {
-//   //     console.log("Tar created");
-//   //     // delete the folders
-//   //     _.each(toZip, (folderName) => {
-//   //       fs.remove(folderName);
-//   //       console.log(new Date() + ` Deleteing ${folderName}`);
-//   //     })
-//   //   })
-//   // }
-// })
